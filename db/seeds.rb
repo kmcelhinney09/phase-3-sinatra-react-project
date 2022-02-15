@@ -23,4 +23,12 @@ end
         review_text:Faker::Movies::BackToTheFuture.quote
     )
 end
+
+10.times do
+    UserRecipeBox.create(
+        user_id:rand(1..10),
+        recipe_id:rand(1..10)
+    )
+end
+
 puts "✅ Done seeding!"
