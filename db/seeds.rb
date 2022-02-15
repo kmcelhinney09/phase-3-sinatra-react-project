@@ -10,7 +10,7 @@ end
 
 10.times do
     Recipe.create(
-        reciep_name:Faker::Food.dish,
+        recipe_name:Faker::Food.dish,
         serving_size:rand(1...20),
         cal_per_serving:rand(100...1000)
     )
