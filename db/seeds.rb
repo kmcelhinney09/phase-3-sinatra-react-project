@@ -12,7 +12,8 @@ end
     Recipe.create(
         recipe_name:Faker::Food.dish,
         serving_size:rand(1...20),
-        cal_per_serving:rand(100...1000)
+        cal_per_serving:rand(100...1000),
+        category_id:rand(1..10)
     )
 end
 
@@ -21,6 +22,7 @@ end
         user_id:rand(1..10),
         recipe_id:rand(1..10),
         review_text:Faker::Movies::BackToTheFuture.quote
+        
     )
 end
 
@@ -30,5 +32,29 @@ end
         recipe_id:rand(1..10)
     )
 end
+
+10.times do
+    Ingredient.create(
+        ingredient_name:Faker::Food.ingredient,
+        cal_per_serving:rand(1..1000)
+    )
+end
+
+10.times do
+    RecipeIngredient.create(
+        recipe_id:rand(1..10),
+        ingredient_id:rand(1..10),
+        quantity:rand(1.0..3.0).round(2),
+        units:(Faker::Food.measurement).split()[1]
+    )
+end
+
+10.times do
+    Category.create(
+        category_name:Faker::Food.ethnic_category
+        
+    )
+end
+
 
 puts "✅ Done seeding!"
