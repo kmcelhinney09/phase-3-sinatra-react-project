@@ -3,7 +3,7 @@ puts "🌱 Seeding spices..."
 10.times do
     User.create(
         user_name:Faker::Name.name,
-        password:Faker::Alphanumeric.alpha(number: 10),
+        password:"password",
         last_logged_in:Faker::Time.between(from: DateTime.now - 1, to: DateTime.now)
     )
 end
@@ -49,7 +49,10 @@ end
     )
 end
 
-10.times do
+Category.create(
+    category_name:"American"
+)
+9.times do
     Category.create(
         category_name:Faker::Food.ethnic_category
         
