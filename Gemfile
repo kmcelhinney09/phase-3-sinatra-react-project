@@ -1,5 +1,9 @@
 source "https://rubygems.org"
 
+# Gem used to hash student password
+# https://github.com/bcrypt-ruby/bcrypt-ruby
+gem 'bcrypt', '~> 3.1'
+
 # A DSL for quickly creating web applications
 # https://github.com/sinatra/sinatra
 gem "sinatra", "~> 2.1"
@@ -33,6 +37,7 @@ gem "sqlite3", "~> 1.4"
 
 # Require all files in a folder
 gem "require_all", "~> 3.0"
+
 
 # These gems will only be used when we are running the application locally
 group :development do
