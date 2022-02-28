@@ -99,19 +99,7 @@ class ApplicationController < Sinatra::Base
     recipe_delete.to_json
   end
   
-  get '/users/:id' do
-    user = User.find(params[:id])
-    user.to_json
-  end
-
-  post '/users'do
-    user = User.create(
-      user_name:params[:user_name],
-      password:params[:password],
-      last_logged_in: DateTime.now
-    )
-    user.to_json(only: [:id, :user_name])
-  end
+  
 end
 
 
