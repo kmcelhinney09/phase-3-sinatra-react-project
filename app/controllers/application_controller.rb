@@ -173,8 +173,26 @@ class ApplicationController < Sinatra::Base
     review.to_json
   end
 
+  get '/categories' do
+    categories = Category.all
+    categories.to_json
+  end
 
-  
+  post '/categories' do
+    category = Category.create(
+      category_name:params[:category_name]
+    )
+    category.to_json
+  end
+
+  delete '/categories/:id' do
+    category = Category.find(params[:id])
+    category.destroy
+    category.to_json
+  end
+
+
+
 end
 
 
