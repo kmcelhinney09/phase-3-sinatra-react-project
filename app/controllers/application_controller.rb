@@ -192,6 +192,15 @@ class ApplicationController < Sinatra::Base
   end
 
 
+  get '/ingredients' do
+    ingredients = Ingredient.all
+    ingredients.to_json
+  end
+
+  get '/ingredients/:id' do
+    ingredient = Ingredient.find(params[:id])
+    ingredient.to_json
+  end
 
 end
 
