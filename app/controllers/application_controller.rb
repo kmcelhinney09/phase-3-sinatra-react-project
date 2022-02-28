@@ -140,7 +140,41 @@ class ApplicationController < Sinatra::Base
     user.to_json(only: [:name, :id, :login_id])
   end
 
+  get '/reviews' do
+    reviews = Review.all
+    reviews.to_json
+  end
 
+  get '/reviews/:id' do
+    review = Review.find(params[:id])
+    review.to_json
+  end
+
+  post '/reviews' do
+    review = Review.create(
+      user_id:params[:user_id],
+      recipe_id:params[:recipe_id],
+      review_text:params[:review_text]
+    )
+    review.to_json
+  end
+
+  patch '/reviews/:id' do
+    review = Review.find(params[:id])
+    review.update(
+      review_text: params[:review_text]
+    )
+    review.to_json
+  end
+
+  delete '/reviews/:id' do
+    review = Review.find(params[:id])
+    review.destroy
+    review.to_json
+  end
+
+
+  
 end
 
 
