@@ -4,7 +4,7 @@ puts "🌱 Seeding spices..."
     User.create(
         name:Faker::Name.name,
         password:"password",
-        user_id:Faker::Internet.email,
+        login_id:Faker::Internet.email,
         last_logged_in:Faker::Time.between(from: DateTime.now - 1, to: DateTime.now)
     )
 end
@@ -14,6 +14,7 @@ end
         recipe_name:Faker::Food.dish,
         serving_size:rand(1...20),
         cal_per_serving:rand(100...1000),
+        directions:Faker::Lorem.paragraph(sentence_count: 2, supplemental: false, random_sentences_to_add: 4),
         category_id:rand(1..10)
     )
 end
