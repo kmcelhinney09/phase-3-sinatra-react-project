@@ -100,6 +100,47 @@ class ApplicationController < Sinatra::Base
   end
   
   
+  get '/users/:id' do
+    user = User.find(params[:id])
+    user.to_json(only: [:name])
+  end
+
+  post '/users' do
+    user = User.create(
+      name:params[:name],
+      password:params[:password],
+      login_id:params[:login_id],
+      last_logged_in: DateTime.now
+    )
+
+    user.to_json(only: [:name, :id, :login_id])
+  end
+
+  patch '/users/:id' do
+    user = User.find(params[:id])
+    user.update(
+      name:params[:name],
+      login_id:params[:login_id]
+    )
+
+    user.to_json(only: [:name, :id, :login_id])
+  end
+
+  patch '/users/:id/update_password' do
+    user = User.find(params[:id])
+    if user.authenticate(params[:current_password])
+      user.update(password:params[:new_password])
+    end
+    user.to_json(only: [:name, :id, :login_id])
+  end
+
+  delete '/users/:id' do
+    user = User.find(params[:id])
+    user.destroy
+    user.to_json(only: [:name, :id, :login_id])
+  end
+
+
 end
 
 
