@@ -54,6 +54,7 @@ class ApplicationController < Sinatra::Base
     new_recipe.to_json
   end
 
+
   patch '/recipes/:id' do
     recipe_update = Recipe.find(params[:id])
 
@@ -99,7 +100,12 @@ class ApplicationController < Sinatra::Base
     recipe_delete.to_json
   end
   
-  
+  get '/recipes/ingredient/:id' do
+    search_ingredient = Ingredient.find(params[:id])
+    recipies = search_ingredient.recipes
+    recipies.to_json
+  end
+
   get '/users/:id' do
     user = User.find(params[:id])
     user.to_json(only: [:name])
@@ -178,6 +184,11 @@ class ApplicationController < Sinatra::Base
     categories.to_json
   end
 
+  get '/categories/:id' do
+    recipe_by_category = Recipe.where(category_id:params[:id]).all
+    recipe_by_category.to_json
+  end
+
   post '/categories' do
     category = Category.create(
       category_name:params[:category_name]
@@ -200,6 +211,33 @@ class ApplicationController < Sinatra::Base
   get '/ingredients/:id' do
     ingredient = Ingredient.find(params[:id])
     ingredient.to_json
+  end
+
+
+  get '/users/:id/recipe_box' do
+    user =  User.find(params[:id])
+    user_recipe_box = user.recipes
+    user_recipe_box.to_json(except: [:id], include: [{
+      reviews: { except:[:id, :recipe_id,:user_id], include:{
+        user: {only: [:name]}
+      }}},{recipe_ingredients: {only: [:quantity, :units], include:{ingredient: {only:[:ingredient_name, :cal_per_serving]}}}},{category: {only: [:category_name]}}]
+    )
+  end
+
+  post '/users/:id/recipe_box' do
+    connection = UserRecipeBox.where(user_id:params[:id], recipe_id:params[:recipe_id])[0]
+    if connection == "null"
+      user_recipe_connection = UserRecipeBox.create(user_id:params[:id], recipe_id:params[:recipe_id])
+    else
+      user_recipe_connection = {error:"Already in your recipe box"}
+    end
+    user_recipe_connection.to_json
+  end
+
+  delete '/users/:id/recipe_box/:recipe_id' do
+    connection = UserRecipeBox.where(user_id:params[:id], recipe_id:params[:recipe_id])[0]
+    connection.destroy
+    connection.to_json
   end
 
 end
