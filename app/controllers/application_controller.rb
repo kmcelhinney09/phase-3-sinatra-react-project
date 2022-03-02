@@ -111,7 +111,7 @@ class ApplicationController < Sinatra::Base
     user.to_json(only: [:name])
   end
 
-  post '/users' do
+  post '/users/new' do
     user = User.create(
       name:params[:name],
       password:params[:password],
@@ -120,6 +120,12 @@ class ApplicationController < Sinatra::Base
     )
 
     user.to_json(only: [:name, :id, :login_id])
+  end
+
+  post '/users/login' do
+    user = User.find_by(login_id:params[:login_id])
+    authentication = user.authenticate(params[:password])
+    authentication.to_json(except: [:password_digest])
   end
 
   patch '/users/:id' do
