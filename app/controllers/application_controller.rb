@@ -112,14 +112,20 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/users/new' do
-    user = User.create(
-      name:params[:name],
-      password:params[:password],
-      login_id:params[:login_id],
-      last_logged_in: DateTime.now
-    )
-
-    user.to_json(only: [:name, :id, :login_id])
+    user = User.find_by(login_id:params[:login_id])
+    
+    if user.nil?
+      new_user = User.create(
+        name:params[:name],
+        password:params[:password],
+        login_id:params[:login_id],
+        last_logged_in: DateTime.now
+      )
+      return new_user.to_json(only: [:name, :id, :login_id])
+    else
+      message = {error:"Email already in use"}
+      return message.to_json
+    end
   end
 
   post '/users/login' do
