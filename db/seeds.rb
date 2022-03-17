@@ -1,5 +1,12 @@
 puts "🌱 Seeding spices..."
 
+User.create(
+    name:"Kevin McElhinney",
+    password:"password",
+    login_id:"mr.mcelhinney@gmail.com",
+    last_logged_in:Faker::Time.between(from: DateTime.now - 1, to: DateTime.now)
+)
+
 10.times do
     User.create(
         name:Faker::Name.name,
@@ -9,17 +16,31 @@ puts "🌱 Seeding spices..."
     )
 end
 
+Recipe.create(
+    recipe_name:"No Bake Cookies",
+        serving_size: 24,
+        cal_per_serving:300,
+        directions:"Mix oatmeal and melted chocolate then let set",
+        category_id:1,
+        creator_id:1,
+        img_url:'https://www.cookingclassy.com/wp-content/uploads/2012/06/no-bake-cookies-77.jpg'
+)
 10.times do
     Recipe.create(
         recipe_name:Faker::Food.dish,
         serving_size:rand(1...20),
         cal_per_serving:rand(100...1000),
-        directions:Faker::Lorem.paragraph(sentence_count: 2, supplemental: false, random_sentences_to_add: 4),
+        directions:Faker::Lorem.paragraph(sentence_count: 20, supplemental: false, random_sentences_to_add: 4),
         category_id:rand(1..10),
         creator_id:rand(1..10),
-        img_url:Faker::LoremFlickr.image(size:"300x300", search_terms:['food'])
+        img_url:Faker::LoremFlickr.image(size:"150x300", search_terms:['food'])
     )
 end
+Review.create(
+    user_id:rand(1..10),
+        recipe_id:1,
+        review_text:Faker::Movies::BackToTheFuture.quote
+)
 
 10.times do 
     Review.create(
@@ -29,6 +50,10 @@ end
         
     )
 end
+UserRecipeBox.create(
+    user_id:1,
+    recipe_id:1
+)
 
 10.times do
     UserRecipeBox.create(
@@ -37,12 +62,24 @@ end
     )
 end
 
+Ingredient.create(
+    ingredient_name: "Chocolate",
+    cal_per_serving:30
+)
+
 10.times do
     Ingredient.create(
         ingredient_name:Faker::Food.ingredient,
         cal_per_serving:rand(1..1000)
     )
 end
+
+RecipeIngredient.create(
+    recipe_id:1,
+    ingredient_id:1,
+    quantity:10,
+    units:"cups"
+)
 
 10.times do
     RecipeIngredient.create(
