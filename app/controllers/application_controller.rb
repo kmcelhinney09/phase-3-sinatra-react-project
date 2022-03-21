@@ -50,10 +50,10 @@ class ApplicationController < Sinatra::Base
         ingredient.cal_per_serving = ingredient_calories
       end
 
-      RecipeIngredient.create(recipe_id: new_recipe.id, 
-        ingredient_id: ingredient_data.id, quantity: ingredient_quantity, units: ingredient_units)
+      RecipeIngredient.create(recipe_id: new_recipe.id,
+                              ingredient_id: ingredient_data.id, quantity: ingredient_quantity, units: ingredient_units)
     end
-    UserRecipeBox.create(user_id:params[:creator_id], recipe_id:new_recipe.id)
+    UserRecipeBox.create(user_id: params[:creator_id], recipe_id: new_recipe.id)
     new_recipe.to_json
   end
 
@@ -61,7 +61,10 @@ class ApplicationController < Sinatra::Base
     recipe_update = Recipe.find(params[:id])
 
     category_id_lookup = get_category_id(params[:category_name])
-
+    recipe_ingredients = recipe_update.ingredients
+    # recipe_ingredients_names = recipe_ingredients.map{|ingredient| ingredient.ingredient_name}
+    # pp recipe_ingredients_names
+  
     recipe_update.update(
       recipe_name: params[:recipe_name],
       serving_size: params[:serving_size],
@@ -71,20 +74,31 @@ class ApplicationController < Sinatra::Base
 
     ingredients = params[:ingredients].to_json
     ingredients_parse = JSON.parse(ingredients)
+    new_ingredient_names = []
     ingredients_parse.each do |ingredient|
       ingredient_name_given = ingredient["ingredient_name"]
+      new_ingredient_names.push(ingredient_name_given)
       ingredient_calories = ingredient["cal_per_serving"]
       ingredient_quantity = ingredient["quantity"]
       ingredient_units = ingredient["units"]
-      ingredient_data = Ingredient.find_by(ingredient_name: ingredient_name_given)
+      ingredient_data = Ingredient.find_or_create_by(ingredient_name: ingredient_name_given)
       if ingredient_data.cal_per_serving != ingredient_calories
         ingredient_data.update(cal_per_serving: ingredient_calories)
       end
-      recipe_ingredient_connection = RecipeIngredient.find_by(recipe_id: recipe_update.id, ingredient_id: ingredient_data.id)
+      recipe_ingredient_connection = RecipeIngredient.find_or_create_by(recipe_id: recipe_update.id, ingredient_id: ingredient_data.id)
+      puts "Recipe Units"
+      puts recipe_ingredient_connection.units
       if recipe_ingredient_connection.quantity != ingredient_quantity
         recipe_ingredient_connection.update(quantity: ingredient_quantity)
-      elsif recipe_ingredient_connection.units != ingredient_units
+      end
+      if recipe_ingredient_connection.units != ingredient_units or recipe_ingredient_connection.units.nil?
         recipe_ingredient_connection.update(units: ingredient_units)
+      end
+    end
+    recipe_ingredients.each do |ingredients|
+      if new_ingredient_names.exclude? ingredients.ingredient_name
+        recipe_ingredient_connection = RecipeIngredient.where(recipe_id: recipe_update.id, ingredient_id:ingredients.id)[0]
+        recipe_ingredient_connection.destroy
       end
     end
     recipe_update.to_json
@@ -111,11 +125,6 @@ class ApplicationController < Sinatra::Base
   get "/users/:id" do
     user = User.find(params[:id])
     user.to_json(only: [:name])
-  end
-
-  get "/users/:id/recipes" do
-    user = Recipe.where(creator_id: params[:id]).all
-    user.to_json(only: [:id])
   end
 
   post "/users/new" do
@@ -165,16 +174,6 @@ class ApplicationController < Sinatra::Base
     user.to_json(only: [:name, :id, :login_id])
   end
 
-  get "/reviews" do
-    reviews = Review.all
-    reviews.to_json
-  end
-
-  get "/reviews/:id" do
-    review = Review.find(params[:id])
-    review.to_json
-  end
-
   post "/reviews" do
     review = Review.create(
       user_id: params[:user_id],
@@ -208,33 +207,10 @@ class ApplicationController < Sinatra::Base
     recipe_by_category.to_json(only: [:recipe_name, :id, :serving_size, :cal_per_serving, :img_url, :updated_at], include: { recipe_ingredients: { only: [:id] }, category: {} })
   end
 
-  post "/categories" do
-    category = Category.create(
-      category_name: params[:category_name],
-    )
-    category.to_json
-  end
-
-  delete "/categories/:id" do
-    category = Category.find(params[:id])
-    category.destroy
-    category.to_json
-  end
-
-  get "/ingredients" do
-    ingredients = Ingredient.all
-    ingredients.to_json
-  end
-
-  get "/ingredients/:id" do
-    ingredient = Ingredient.find(params[:id])
-    ingredient.to_json
-  end
-
   get "/users/:id/recipe_box" do
     user = User.find(params[:id])
     user_recipe_box = user.recipes
-    user_recipe_box.to_json(only: [:recipe_name, :id, :serving_size, :cal_per_serving, :img_url, :updated_at], include: { recipe_ingredients: { only: [:id] }, category: {} })
+    user_recipe_box.to_json(only: [:recipe_name, :id, :serving_size, :cal_per_serving, :img_url, :updated_at, :category_id], include: { recipe_ingredients: { only: [:id] }, category: {only:[:category_name]} })
   end
 
   post "/users/:id/recipe_box" do
