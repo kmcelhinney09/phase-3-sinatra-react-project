@@ -41,6 +41,10 @@ gem 'pg'
 # Require all files in a folder
 gem "require_all", "~> 3.0"
 
+ # Used to generate seed data
+  # https://github.com/faker-ruby/faker
+  gem "faker", "~> 2.18"
+
 
 # These gems will only be used when we are running the application locally
 group :development do
@@ -50,9 +54,7 @@ group :development do
   # https://github.com/alexch/rerun
   gem "rerun"
   
-  # Used to generate seed data
-  # https://github.com/faker-ruby/faker
-  gem "faker", "~> 2.18"
+ 
 
 end
 
